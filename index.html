@@ -809,7 +809,7 @@ function renderChallenges(){
 function renderPlayerEditList(){
   const el=document.getElementById('player-edit-list');
   if(!players.length){el.innerHTML='<div style="font-size:12px;color:#C0C1C2;font-weight:500;">No players yet.</div>';return;}
-  el.innerHTML=players.map((p,i)=>`
+  el.innerHTML=players.map((p,i)=>({p,i})).sort((a,b)=>a.p.name.localeCompare(b.p.name,undefined,{sensitivity:'base'})).map(({p,i})=>`
     <div class="player-edit-row" id="per-${i}">
       <div class="player-edit-header" onclick="toggleEdit(${i})">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -859,7 +859,7 @@ function populateSel(){
   const list=document.getElementById('pts-pl-list');
   if(!list)return;
   list.innerHTML='<div class="custom-dd-item placeholder" onclick="selectPlayer(\'\',\'Select player...\')">Select player...</div>'+
-    players.map(p=>`<div class="custom-dd-item" onclick="selectPlayer('${p.id}','${p.name}')">${p.name}</div>`).join('');
+    [...players].sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})).map(p=>`<div class="custom-dd-item" onclick="selectPlayer('${p.id}','${p.name}')">${p.name}</div>`).join('');
 }
 
 function toggleDD(){
