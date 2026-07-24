@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Marketing Mayhem — Origence</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Gloria+Hallelujah&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',system-ui,sans-serif;background:#F5F5F5;min-height:100vh;color:#0F0F0F;}
+.app{max-width:720px;margin:0 auto;padding-bottom:3rem;}
+.hdr{background:#fff;padding:1.5rem 1.5rem 1.25rem;border-bottom:1px solid #E0E1E2;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ED2A91,#EE2037);}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:1.1rem;}
+.logo-name{font-size:34px;font-weight:900;color:#0F0F0F;letter-spacing:-0.8px;line-height:1;}
+.logo-name span{background:linear-gradient(90deg,#ED2A91,#EE2037);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-tag{font-size:15px;color:#9A9B9D;margin-top:6px;font-weight:600;}
+.day-pill{background:#F5F5F5;border:1px solid #E0E1E2;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:#6B6B6B;white-space:nowrap;flex-shrink:0;}
+.pin-box{position:relative;background:#FFD166;border-radius:2px;padding:14px 16px 16px;box-shadow:2px 3px 10px rgba(0,0,0,0.15),0 0 0 1px rgba(0,0,0,0.08);transform:rotate(-0.4deg);}
+.pin-box::before{content:'📌';position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:24px;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2));}
+.pin-label{font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.pin-txt{font-size:16px;color:#1B1B1B;line-height:1.7;font-weight:400;font-family:'Gloria Hallelujah',cursive;}
+.tabs{display:flex;gap:1px;background:#E0E1E2;border-bottom:1px solid #E0E1E2;margin-bottom:1.5rem;}
+.tab{flex:1;padding:11px 8px;background:#fff;font-size:11px;font-weight:700;color:#9A9B9D;cursor:pointer;text-align:center;transition:all .15s;border:none;font-family:'Poppins',sans-serif;letter-spacing:.03em;text-transform:uppercase;}
+.tab.on{background:#F5F5F5;color:#0F0F0F;border-bottom:2.5px solid #ED2A91;}
+.tab:hover:not(.on){color:#3A3A3C;}
+.ldr{margin:0 1.5rem 1.25rem;background:#fff;border:1px solid #E0E1E2;border-radius:14px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;}
+.ldr::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ED2A91,#EE2037);}
+.ldr-av{width:54px;height:54px;border-radius:50%;background:rgba(237,42,145,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:2px solid #ED2A91;}
+.ldr-label{font-size:10px;font-weight:700;color:#ED2A91;text-transform:uppercase;letter-spacing:.06em;}
+.ldr-name{font-size:22px;font-weight:800;color:#0F0F0F;margin-top:2px;line-height:1.1;}
+.ldr-alias{font-size:12px;color:#9A9B9D;margin-top:3px;font-weight:500;}
+.ldr-num{font-size:40px;font-weight:900;background:linear-gradient(135deg,#ED2A91,#EE2037);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.ldr-ptl{font-size:11px;color:#9A9B9D;text-align:right;margin-top:2px;font-weight:500;}
+.board{padding:0 1.5rem;}
+.bh{display:grid;grid-template-columns:36px 1fr 58px 58px 58px 68px;padding:6px 14px;margin-bottom:6px;}
+.bh span{font-size:10px;font-weight:700;color:#C0C1C2;text-transform:uppercase;letter-spacing:.05em;text-align:center;}
+.bh span:nth-child(2){text-align:left;}
+.pr{display:grid;grid-template-columns:36px 1fr 58px 58px 58px 68px;padding:12px 14px;background:#fff;border-radius:12px;margin-bottom:5px;border:1px solid #E0E1E2;align-items:center;transition:all .15s;}
+.pr:hover{border-color:#ED2A91;box-shadow:0 2px 8px rgba(237,42,145,0.08);}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;overflow:hidden;}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.pn{font-size:16px;font-weight:700;color:#0F0F0F;}
+.palias{font-size:11px;color:#9A9B9D;margin-top:1px;font-weight:500;}
+.cl{font-size:13px;color:#9A9B9D;text-align:center;font-weight:600;}
+.tl{font-size:18px;font-weight:800;color:#0F0F0F;text-align:center;}
+.sec{padding:0 1.5rem;margin-top:0.5rem;}
+.sec-t{font-size:10px;font-weight:700;color:#C0C1C2;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.li{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-radius:10px;margin-bottom:5px;border:1px solid #E0E1E2;}
+.lb{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.lb.trivia{background:#034BB7;color:#fff;}
+.lb.challenge{background:#0A8A3F;color:#fff;}
+.lb.prediction{background:#3A3A3C;color:#fff;}
+.lb.playlist{background:#ED2A91;color:#fff;}
+.lb.bonus{background:#D58300;color:#fff;}
+.ln{font-size:13px;font-weight:700;color:#0F0F0F;flex:1;}
+.ld{font-size:11px;color:#9A9B9D;font-weight:500;}
+.lp{font-size:14px;font-weight:800;background:linear-gradient(135deg,#ED2A91,#EE2037);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.load-more{display:block;width:100%;margin-top:8px;padding:10px;background:transparent;border:1px solid #E0E1E2;border-radius:10px;color:#9A9B9D;font-size:11px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;}
+.load-more:hover{border-color:#ED2A91;color:#ED2A91;}
+.pg{background:#fff;border-radius:12px;border:1px solid #E0E1E2;overflow:hidden;margin:0 1.5rem 10px;}
+.ph{padding:12px 16px;display:flex;align-items:center;gap:10px;background:#F5F5F5;border-bottom:1px solid #E0E1E2;}
+.phi{font-size:18px;}
+.phn{font-size:14px;font-weight:700;color:#0F0F0F;}
+.pr2{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:.5px solid #F0F1F2;}
+.pr2:last-child{border-bottom:none;}
+.pl2{font-size:13px;color:#6B6B6B;font-weight:500;}
+.pv{font-size:12px;font-weight:700;color:#0F0F0F;background:#F5F5F5;border-radius:6px;padding:3px 10px;}
+.acard{background:#fff;border-radius:12px;border:1px solid #E0E1E2;padding:16px;margin:0 1.5rem 12px;}
+.at{font-size:13px;font-weight:700;color:#0F0F0F;margin-bottom:14px;}
+.fl{font-size:11px;font-weight:700;color:#9A9B9D;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.fi{width:100%;font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid #E0E1E2;background:#F5F5F5;color:#0F0F0F;font-family:'Poppins',sans-serif;margin-bottom:10px;font-weight:500;}
+.fi:focus{outline:none;border-color:#ED2A91;background:#fff;}
+.sel2{width:100%;font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid #E0E1E2;background:#F5F5F5;color:#0F0F0F;font-family:'Poppins',sans-serif;margin-bottom:10px;font-weight:500;}
+.sel2:focus{outline:none;border-color:#ED2A91;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:10px;}
+.tb{padding:8px 6px;border-radius:8px;border:1px solid #E0E1E2;background:#F5F5F5;font-size:11px;font-weight:700;color:#6B6B6B;cursor:pointer;text-align:center;transition:all .12s;font-family:'Poppins',sans-serif;}
+.tb.on{background:linear-gradient(135deg,#ED2A91,#EE2037);color:#fff;border-color:transparent;}
+.tb:hover:not(.on){border-color:#ED2A91;color:#ED2A91;}
+.preview{background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:none;}
+.preview.show{display:block;}
+.pvr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.pvl{color:#6B6B6B;font-weight:500;}
+.pvv{font-weight:700;color:#0A8A3F;}
+.abtns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.btn{font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;}
+.btn-pink{background:linear-gradient(135deg,#ED2A91,#EE2037);color:#fff;}
+.btn-pink:hover{opacity:.9;}
+.btn-light{background:#F5F5F5;color:#0F0F0F;border:1px solid #E0E1E2;}
+.btn-light:hover{border-color:#ED2A91;color:#ED2A91;}
+.btn-green{background:#0A8A3F;color:#fff;}
+.btn-green:hover{background:#0A6F33;}
+.btn-red{background:transparent;border:1px solid #EE2037;color:#EE2037;}
+.btn-red:hover{background:#FEF2F2;}
+.sep{border-top:1px solid #F0F1F2;margin:16px 0;padding-top:16px;}
+.hidden{display:none!important;}
+.pin-row{display:flex;gap:8px;margin-bottom:8px;}
+.pin-i{font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid #E0E1E2;background:#F5F5F5;color:#0F0F0F;font-family:'Poppins',sans-serif;width:160px;font-weight:500;}
+.pin-i:focus{outline:none;border-color:#ED2A91;background:#fff;}
+.err{font-size:12px;color:#EE2037;margin-top:4px;display:none;font-weight:500;}
+.ta{width:100%;font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid #E0E1E2;background:#F5F5F5;color:#0F0F0F;font-family:'Poppins',sans-serif;resize:vertical;min-height:70px;margin-bottom:10px;font-weight:500;}
+.ta:focus{outline:none;border-color:#ED2A91;background:#fff;}
+.row2{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px;}
+.row2>div{flex:1;min-width:120px;}
+.empty{text-align:center;padding:2rem;color:#C0C1C2;font-size:13px;font-weight:500;}
+.player-edit-row{background:#F5F5F5;border:1px solid #E0E1E2;border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.player-edit-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px;}
+.player-edit-name{font-size:13px;font-weight:700;color:#0F0F0F;}
+.player-edit-alias{font-size:11px;color:#9A9B9D;font-weight:500;margin-top:1px;}
+.player-edit-body{margin-top:10px;display:none;}
+.player-edit-body.open{display:block;}
+.edit-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.edit-row>div{flex:1;min-width:120px;}
+.success-msg{font-size:11px;color:#0A8A3F;font-weight:600;margin-top:4px;display:none;}
+.status-bar{background:#E0E1E2;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:600;color:#6B6B6B;display:inline-block;margin-bottom:10px;}
+.status-bar.ok{background:#F0FDF4;color:#0A8A3F;}
+.status-bar.err{background:#FEF2F2;color:#EE2037;}
+@media(max-width:600px){
+  .hdr{padding:1rem;}
+  .logo-name{font-size:22px;}
+  .logo-tag{font-size:12px;}
+  .day-pill{font-size:10px;padding:4px 10px;}
+  .pin-txt{font-size:12px;}
+  .tabs .tab{font-size:9px;padding:9px 3px;letter-spacing:0;}
+  .ldr{margin:0 1rem 1rem;padding:1rem;gap:10px;}
+  .ldr-name{font-size:16px;}
+  .ldr-num{font-size:28px;}
+  .ldr-av{width:42px;height:42px;}
+  .board{padding:0 1rem;}
+  .bh{grid-template-columns:28px 1fr 52px;padding:4px 8px;}
+  .bh span:nth-child(3),.bh span:nth-child(4),.bh span:nth-child(5){display:none;}
+  .pr{grid-template-columns:28px 1fr 52px;padding:10px 8px;}
+  .pr>div:nth-child(3),.pr>div:nth-child(4),.pr>div:nth-child(5){display:none;}
+  .av{width:28px;height:28px;font-size:10px;}
+  .pn{font-size:13px;}
+  .tl{font-size:14px;}
+  .sec{padding:0 1rem;}
+  .li{gap:6px;padding:8px 10px;}
+  .ld{display:none;}
+  .pg{margin:0 1rem 10px;}
+  .acard{margin:0 1rem 12px;padding:12px;}
+  .tgrid{grid-template-columns:1fr 1fr;}
+  .row2{flex-direction:column;}
+  .row2>div{min-width:unset;width:100%;}
+  .edit-row{flex-direction:column;}
+  .edit-row>div{min-width:unset;width:100%;}
+  .pin-box{padding:12px 12px 14px;}
+  .pin-row{flex-wrap:wrap;}
+  .pin-i{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="logo-name"><span>Marketing Mayhem</span> 💥</div>
+      <div class="logo-tag">No messi business. Elite trash talk.</div>
+    </div>
+    <div class="day-pill" id="daypill">Day —</div>
+  </div>
+  <div style="padding-top:8px;">
+    <div class="pin-box">
+      <div class="pin-label">From your host</div>
+      <p class="pin-txt" id="hmsg">Welcome to Marketing Mayhem! No messi business. Elite trash talk. This is where we compete, connect, and earn our glory — one shenanigans at a time. (Juan, we are coming for you! 🤣)</p>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('board')">Standings</button>
+  <button class="tab" onclick="sw('log')">Points log</button>
+  <button class="tab" onclick="sw('pts')">Point system</button>
+  <button class="tab" onclick="sw('admin')">Admin</button>
+</div>
+
+<!-- STANDINGS -->
+<div id="t-board">
+  <div class="ldr">
+    <div class="ldr-av" id="l-avatar"></div>
+    <div style="flex:1">
+      <div class="ldr-label">Current leader</div>
+      <div class="ldr-name" id="l-name">—</div>
+      <div class="ldr-alias" id="l-alias">—</div>
+    </div>
+    <div style="text-align:right">
+      <div class="ldr-num" id="l-pts">0</div>
+      <div class="ldr-ptl">pts</div>
+    </div>
+  </div>
+  <div class="board">
+    <div class="bh"><span>#</span><span>Player</span><span>Tri</span><span>Chal</span><span>Pred</span><span>Total</span></div>
+    <div id="plist"></div>
+  </div>
+</div>
+
+<!-- LOG -->
+<div id="t-log" class="hidden">
+  <div class="sec">
+    <div class="sec-t">Points log</div>
+    <div id="log-items"></div>
+    <button class="load-more hidden" id="load-more-btn" onclick="loadMore()">Load more</button>
+  </div>
+</div>
+
+<!-- POINT SYSTEM -->
+<div id="t-pts" class="hidden">
+  <div class="pg"><div class="ph"><span class="phi">🧠</span><span class="phn">Trivia</span></div>
+    <div class="pr2"><span class="pl2">First correct answer</span><span class="pv">3 pts</span></div>
+  </div>
+  <div class="pg"><div class="ph"><span class="phi">🎯</span><span class="phn">Challenges</span></div>
+    <div class="pr2"><span class="pl2">Participation (auto-awarded to all who post)</span><span class="pv">1 pt</span></div>
+    <div class="pr2"><span class="pl2">Runner up — each tied player gets</span><span class="pv">2 pts</span></div>
+    <div class="pr2"><span class="pl2">Winner — photo / video / caption</span><span class="pv">3 pts</span></div>
+    <div class="pr2"><span class="pl2">Winner — AI image / creative</span><span class="pv">5 pts</span></div>
+    <div class="pr2"><span class="pl2">Winner — opinion / confession / sentence</span><span class="pv">3 pts</span></div>
+    <div class="pr2"><span class="pl2">Winner — two truths and a lie</span><span class="pv">3 pts</span></div>
+  </div>
+  <div class="pg"><div class="ph"><span class="phi">🔮</span><span class="phn">Predictions</span></div>
+    <div class="pr2"><span class="pl2">Sports — correct result</span><span class="pv">3 pts</span></div>
+    <div class="pr2"><span class="pl2">Sports — exact score bonus</span><span class="pv">5 pts</span></div>
+    <div class="pr2"><span class="pl2">Weather — closest prediction</span><span class="pv">5 pts</span></div>
+    <div class="pr2"><span class="pl2">Stock market — correct direction</span><span class="pv">5 pts</span></div>
+    <div class="pr2"><span class="pl2">Where in the world — first correct</span><span class="pv">3 pts</span></div>
+  </div>
+  <div class="pg"><div class="ph"><span class="phi">🎵</span><span class="phn">Playlist battle</span></div>
+    <div class="pr2"><span class="pl2">Participation</span><span class="pv">1 pt</span></div>
+    <div class="pr2"><span class="pl2">Most voted song</span><span class="pv">5 pts</span></div>
+  </div>
+  <div class="pg"><div class="ph"><span class="phi">⭐</span><span class="phn">Bonus</span></div>
+    <div class="pr2"><span class="pl2">Special one-off moments</span><span class="pv">Custom</span></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="t-admin" class="hidden">
+  <div class="acard">
+    <div id="lock-ui">
+      <div class="at">🔒 Admin access</div>
+      <div class="pin-row">
+        <input class="pin-i" type="password" id="pin-in" placeholder="Enter PIN" maxlength="6" onkeydown="if(event.key==='Enter')chkPin()"/>
+        <button class="btn btn-pink" onclick="chkPin()">Unlock</button>
+      </div>
+      <div class="err" id="pin-err">Incorrect PIN. Try again.</div>
+    </div>
+    <div id="admin-ui" class="hidden">
+
+      <div class="at">📅 Launch date</div>
+      <p style="font-size:12px;color:#9A9B9D;font-weight:500;margin-bottom:10px;">Set once when you go live. Day 1 = this date.</p>
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:4px;">
+        <div style="flex:1"><label class="fl">Launch date</label><input class="fi" type="date" id="launch-date" style="margin:0"/></div>
+        <button class="btn btn-pink" onclick="saveLaunchDate()">Set date</button>
+      </div>
+      <div class="success-msg" id="date-saved">Launch date saved!</div>
+
+      <div class="sep">
+        <div class="at">📌 Pinned message</div>
+        <label class="fl">Replaces whatever's currently pinned</label>
+        <textarea class="ta" id="msg-in" placeholder="Type your message for the team..."></textarea>
+        <button class="btn btn-pink" onclick="saveMsg()">Pin message</button>
+      </div>
+
+      <div class="sep">
+        <div class="at">➕ Add points</div>
+        <label class="fl">Player</label>
+        <select class="sel2" id="pts-pl"></select>
+        <label class="fl">Challenge type</label>
+        <div class="tgrid" id="tgrid"></div>
+        <div class="preview" id="preview">
+          <div class="pvr" id="pv-part" style="display:none"><span class="pvl">Participation</span><span class="pvv">+1 pt</span></div>
+          <div class="pvr" id="pv-ru" style="display:none"><span class="pvl">Runner up</span><span class="pvv">+2 pts</span></div>
+          <div class="pvr" id="pv-win" style="display:none"><span class="pvl">Winner</span><span class="pvv" id="pv-wv">+3 pts</span></div>
+          <div class="pvr" id="pv-ex" style="display:none"><span class="pvl">Exact score bonus</span><span class="pvv">+5 pts</span></div>
+        </div>
+        <div id="award-success" style="font-size:12px;color:#0A8A3F;font-weight:700;margin-bottom:8px;display:none;"></div>
+        <div id="award-err" style="font-size:12px;color:#EE2037;font-weight:600;margin-bottom:8px;display:none;"></div>
+        <div class="abtns">
+          <button class="btn btn-light" onclick="award('part')">+ Participation</button>
+          <button class="btn btn-light" onclick="award('ru')">+ Runner up</button>
+          <button class="btn btn-light" onclick="award('win')">+ Winner</button>
+          <button class="btn btn-light" onclick="award('ex')">+ Exact score</button>
+        </div>
+        <div class="row2">
+          <div><label class="fl">Custom pts</label><input class="fi" type="number" id="c-pts" placeholder="e.g. 10" style="margin:0"/></div>
+          <div style="flex:2"><label class="fl">Reason</label><input class="fi" type="text" id="c-rsn" placeholder="e.g. Bonus — best meme of the week" style="margin:0"/></div>
+          <button class="btn btn-green" onclick="awardCustom()">Award</button>
+        </div>
+      </div>
+
+      <div class="sep">
+        <div class="at">🎲 Custom challenge</div>
+        <div style="margin-bottom:8px;"><label class="fl">Challenge name</label><input class="fi" id="cc-name" placeholder="e.g. Best throwback photo" style="margin:0"/></div>
+        <div class="row2">
+          <div><label class="fl">Participation pts</label><input class="fi" type="number" id="cc-part" placeholder="1" style="margin:0"/></div>
+          <div><label class="fl">Runner up pts</label><input class="fi" type="number" id="cc-ru" placeholder="2" style="margin:0"/></div>
+          <div><label class="fl">Winner pts</label><input class="fi" type="number" id="cc-pts" placeholder="3" style="margin:0"/></div>
+          <button class="btn btn-pink" style="margin-top:18px;" onclick="addCC()">Add</button>
+        </div>
+      </div>
+
+      <div class="sep">
+        <div class="at">👥 Manage players</div>
+        <p style="font-size:11px;font-weight:700;color:#9A9B9D;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Add new player</p>
+        <div class="row2">
+          <div style="flex:2"><label class="fl">Name</label><input class="fi" id="np-name" placeholder="First name + last initial" style="margin:0"/></div>
+          <div style="flex:2"><label class="fl">War Room alias</label><input class="fi" id="np-alias" placeholder="e.g. The Dark Horse 🐴" style="margin:0"/></div>
+          <button class="btn btn-light" onclick="addPlayer()">Add</button>
+        </div>
+        <p style="font-size:11px;font-weight:700;color:#9A9B9D;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 8px;">Edit existing players</p>
+        <div id="player-edit-list"></div>
+      </div>
+
+      <div class="sep">
+        <div class="at">📋 Points log</div>
+        <div id="admin-log"><span style="font-size:12px;color:#C0C1C2;font-weight:500;">No entries yet.</span></div>
+      </div>
+
+      <div class="sep">
+        <div class="at" style="color:#EE2037;">⚠️ Reset scores</div>
+        <p style="font-size:12px;color:#9A9B9D;margin-bottom:12px;font-weight:500;">Zeroes all scores and clears the log. Players are preserved.</p>
+        <button class="btn btn-red" onclick="showResetConfirm()">Reset all scores</button>
+        <div id="reset-confirm-box" style="display:none;background:#FEF2F2;border:1.5px solid #EE2037;border-radius:10px;padding:12px 14px;margin-top:8px;">
+          <p style="font-size:13px;font-weight:600;color:#EE2037;margin-bottom:10px;">Are you sure? This cannot be undone.</p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-red" onclick="doReset()">Yes, reset everything</button>
+            <button class="btn btn-light" onclick="hideResetConfirm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const SUPABASE_URL='https://otnxprywjzrxpslylnov.supabase.co';
+const SUPABASE_KEY='sb_publishable_aS6VULId_rI33f-dyUGHlg_vJ17mZu5';
+const PIN='1926';
+const AP='Your War Room alias — who are you when the points are on the line?';
+
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const TYPES=[
+  {id:'trivia',   label:'Trivia',              cat:'trivia',    win:3,ru:0,part:0,exact:false},
+  {id:'photo',    label:'Photo / Video',        cat:'challenge', win:3,ru:2,part:1,exact:false},
+  {id:'ai',       label:'AI Image',             cat:'challenge', win:5,ru:2,part:1,exact:false},
+  {id:'caption',  label:'Caption this',         cat:'challenge', win:3,ru:2,part:1,exact:false},
+  {id:'sentence', label:'Finish sentence',      cat:'challenge', win:3,ru:0,part:1,exact:false},
+  {id:'opinion',  label:'Opinion / Confession', cat:'challenge', win:3,ru:0,part:1,exact:false},
+  {id:'2truths',  label:'2 Truths & a Lie',     cat:'challenge', win:3,ru:0,part:1,exact:false},
+  {id:'sports',   label:'Sports prediction',    cat:'prediction',win:3,ru:0,part:0,exact:true},
+  {id:'weather',  label:'Weather bet',          cat:'prediction',win:5,ru:0,part:0,exact:false},
+  {id:'stock',    label:'Stock market',         cat:'prediction',win:5,ru:0,part:0,exact:false},
+  {id:'witw',     label:'Where in the world',   cat:'prediction',win:3,ru:0,part:0,exact:false},
+  {id:'playlist', label:'Playlist battle',      cat:'playlist',  win:5,ru:0,part:1,exact:false},
+  {id:'bonus',    label:'Bonus / Special',      cat:'bonus',     win:0,ru:0,part:0,exact:false},
+];
+
+let selType=null;
+let logShown=5;
+let openEdit=null;
+let players=[];
+let logEntries=[];
+
+function inits(n){return n.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function ri(i){
+  if(i===0)return'<span style="font-size:20px">🥇</span>';
+  if(i===1)return'<span style="font-size:18px">🥈</span>';
+  if(i===2)return'<span style="font-size:18px">🥉</span>';
+  return`<span style="font-size:13px;font-weight:700;color:#C0C1C2">${i+1}</span>`;
+}
+function catBadge(c){return`<span class="lb ${c}">${c}</span>`;}
+function isAP(a){return!a||a===AP||a==='—';}
+
+function avatarHtml(p,size='36px'){
+  if(p.photo){
+    return`<div class="av" style="width:${size};height:${size};flex-shrink:0;"><img src="${p.photo}" alt="${p.name}"/></div>`;
+  }
+  return`<div class="av" style="width:${size};height:${size};background:${p.color}18;color:${p.color};flex-shrink:0;">${inits(p.name)}</div>`;
+}
+
+function getDay(){
+  const s=document.getElementById('launch-date').value;
+  if(!s)return'—';
+  const parts=s.split('-');
+  const launch=new Date(parts[0],parts[1]-1,parts[2]);
+  const now=new Date();
+  launch.setHours(0,0,0,0);now.setHours(0,0,0,0);
+  const diff=Math.floor((now-launch)/(1000*60*60*24));
+  return Math.max(1,diff+1);
+}
+
+function updateDayPill(){
+  const d=getDay();
+  document.getElementById('daypill').textContent=d==='—'?'Day —':'Day '+d;
+}
+
+// ── RENDER PLAYERS ──
+function renderPlayers(){
+  const s=[...players].sort((a,b)=>b.total-a.total);
+  const leader=s.find(p=>p.total>0)||s[0];
+  if(leader){
+    document.getElementById('l-name').textContent=leader.name;
+    document.getElementById('l-alias').textContent=isAP(leader.alias)?'Alias TBD':leader.alias;
+    document.getElementById('l-pts').textContent=leader.total;
+    const lav=document.getElementById('l-avatar');
+    lav.innerHTML=leader.photo
+      ?`<img src="${leader.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${leader.name}"/>`
+      :`<span style="font-size:18px;font-weight:700;color:#ED2A91">${inits(leader.name)}</span>`;
+  }
+  document.getElementById('plist').innerHTML=s.length?s.map((p,i)=>`
+    <div class="pr">
+      <div style="text-align:center">${ri(i)}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${avatarHtml(p,'36px')}
+        <div>
+          <div class="pn">${p.name}</div>
+          <div class="palias" style="${isAP(p.alias)?'color:#E0E1E2;font-style:italic;':''}">${isAP(p.alias)?'Alias TBD':p.alias}</div>
+        </div>
+      </div>
+      <div class="cl">${p.trivia}</div>
+      <div class="cl">${p.challenge}</div>
+      <div class="cl">${p.pred}</div>
+      <div class="tl">${p.total}</div>
+    </div>`).join(''):'<div class="empty">No players yet</div>';
+}
+
+// ── RENDER LOG ──
+function renderLog(){
+  const all=[...logEntries].reverse();
+  const el=document.getElementById('log-items');
+  if(el){
+    const items=all.slice(0,logShown);
+    el.innerHTML=items.length
+      ?items.map(l=>`<div class="li">${catBadge(l.category)}<span class="ln">${l.player_name}</span><span class="ld">${l.description}</span><span class="lp">+${l.points}</span></div>`).join('')
+      :'<div style="font-size:13px;color:#C0C1C2;padding:8px 0;font-weight:500;">No points logged yet.</div>';
+    const btn=document.getElementById('load-more-btn');
+    if(btn){all.length>logShown?btn.classList.remove('hidden'):btn.classList.add('hidden');}
+  }
+}
+
+function loadMore(){logShown+=5;renderLog();}
+
+function renderAdminLog(){
+  const el=document.getElementById('admin-log');
+  const items=[...logEntries].reverse();
+  if(!items.length){el.innerHTML='<span style="font-size:12px;color:#C0C1C2;font-weight:500;">No entries yet.</span>';return;}
+  el.innerHTML=items.map(l=>`
+    <div style="display:flex;gap:8px;padding:6px 0;border-bottom:.5px solid #F0F1F2;align-items:center;">
+      ${catBadge(l.category)}
+      <span style="flex:1;font-size:13px;font-weight:700;color:#0F0F0F;">${l.player_name}</span>
+      <span style="font-size:11px;color:#9A9B9D;font-weight:500;">${l.description}</span>
+      <span style="font-weight:800;color:#0A8A3F;font-size:14px;">+${l.points}</span>
+    </div>`).join('');
+}
+
+function renderPlayerEditList(){
+  const el=document.getElementById('player-edit-list');
+  if(!players.length){el.innerHTML='<div style="font-size:12px;color:#C0C1C2;font-weight:500;">No players yet.</div>';return;}
+  el.innerHTML=players.map((p,i)=>`
+    <div class="player-edit-row" id="per-${i}">
+      <div class="player-edit-header" onclick="toggleEdit(${i})">
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${avatarHtml(p,'32px')}
+          <div>
+            <div class="player-edit-name">${p.name}</div>
+            <div class="player-edit-alias">${isAP(p.alias)?'No alias yet':p.alias}</div>
+          </div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9B9D" stroke-width="2.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      </div>
+      <div class="player-edit-body" id="peb-${i}">
+        <div class="edit-row" style="margin-top:10px;">
+          <div style="flex:2"><label class="fl">Name</label><input class="fi" id="en-${i}" value="${p.name}" style="margin:0"/></div>
+          <div style="flex:2"><label class="fl">War Room alias</label><input class="fi" id="ea-${i}" value="${isAP(p.alias)?'':p.alias}" placeholder="${AP}" style="margin:0"/></div>
+          <button class="btn btn-pink" style="font-size:10px;padding:7px 12px;margin-top:18px;" onclick="savePlayer(${i})">Save</button>
+        </div>
+        <div style="margin-top:10px;">
+          <label class="fl">Player photo</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+            <div style="width:44px;height:44px;border-radius:50%;border:1.5px solid #E0E1E2;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${p.color}18;color:${p.color};">
+              ${p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;" alt="${p.name}"/>`:`<span style="font-size:12px;font-weight:700;">${inits(p.name)}</span>`}
+            </div>
+            <div>
+              <input type="file" accept="image/*" id="photo-file-${i}" style="display:none;" onchange="handlePhoto(${i})"/>
+              <button class="btn btn-light" style="font-size:10px;padding:6px 12px;" onclick="document.getElementById('photo-file-${i}').click()">Upload photo</button>
+              ${p.photo?`<button class="btn btn-light" style="font-size:10px;padding:6px 12px;margin-left:6px;color:#EE2037;border-color:#EE2037;" onclick="removePhoto(${i})">Remove</button>`:''}
+            </div>
+          </div>
+        </div>
+        <div class="success-msg" id="esaved-${i}">Saved!</div>
+      </div>
+    </div>`).join('');
+}
+
+function populateSel(){
+  document.getElementById('pts-pl').innerHTML='<option value="">Select player...</option>'+players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function buildGrid(){
+  document.getElementById('tgrid').innerHTML=TYPES.map(t=>`<button class="tb" id="tb-${t.id}" onclick="selT('${t.id}')">${t.label}</button>`).join('');
+}
+
+function selT(id){
+  selType=TYPES.find(t=>t.id===id);
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tb-'+id).classList.add('on');
+  const pv=document.getElementById('preview');pv.classList.add('show');
+  document.getElementById('pv-part').style.display=selType.part?'flex':'none';
+  document.getElementById('pv-ru').style.display=selType.ru?'flex':'none';
+  document.getElementById('pv-win').style.display=selType.win?'flex':'none';
+  document.getElementById('pv-wv').textContent=`+${selType.win} pts`;
+  document.getElementById('pv-ex').style.display=selType.exact?'flex':'none';
+}
+
+function showErr(msg){
+  const el=document.getElementById('award-err');
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',3000);
+}
+
+function showSuccess(msg){
+  const el=document.getElementById('award-success');
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',3000);
+}
+
+// ── SUPABASE HELPERS ──
+async function loadAll(){
+  const [pr,lr,sr]=await Promise.all([
+    sb.from('players').select('*').order('total',{ascending:false}),
+    sb.from('log').select('*').order('created_at',{ascending:true}),
+    sb.from('settings').select('*')
+  ]);
+  players=pr.data||[];
+  logEntries=lr.data||[];
+  const settings=sr.data||[];
+  const msg=settings.find(s=>s.key==='message');
+  const ld=settings.find(s=>s.key==='launch_date');
+  if(msg)document.getElementById('hmsg').textContent=msg.value;
+  if(ld){
+    document.getElementById('launch-date').value=ld.value;
+    updateDayPill();
+  }
+  renderPlayers();
+  renderLog();
+  renderAdminLog();
+  renderPlayerEditList();
+  populateSel();
+}
+
+async function applyPts(playerId,playerName,pts,desc,cat){
+  const p=players.find(x=>x.id===playerId);if(!p)return;
+  let update={total:p.total+pts};
+  if(cat==='trivia')update.trivia=(p.trivia||0)+pts;
+  else if(cat==='challenge')update.challenge=(p.challenge||0)+pts;
+  else if(cat==='prediction')update.pred=(p.pred||0)+pts;
+  else if(cat==='playlist')update.pred=(p.pred||0)+pts;
+  else update.challenge=(p.challenge||0)+pts;
+
+  const[,lr]=await Promise.all([
+    sb.from('players').update(update).eq('id',playerId),
+    sb.from('log').insert({player_name:playerName,category:cat,description:desc,points:pts})
+  ]);
+  showSuccess(`+${pts} pts added to ${playerName}!`);
+  await loadAll();
+}
+
+async function award(type){
+  const plId=document.getElementById('pts-pl').value;
+  if(!plId){showErr('Select a player first!');return;}
+  if(!selType){showErr('Select a challenge type first!');return;}
+  const p=players.find(x=>x.id===plId);
+  let pts=0,desc='';
+  if(type==='part'&&selType.part){pts=1;desc=`${selType.label} — participation`;}
+  if(type==='ru'&&selType.ru){pts=selType.ru;desc=`${selType.label} — runner up`;}
+  if(type==='win'&&selType.win){pts=selType.win;desc=`${selType.label} — winner`;}
+  if(type==='ex'&&selType.exact){pts=5;desc=`${selType.label} — exact score bonus`;}
+  if(!pts){showErr('No points for this combination.');return;}
+  await applyPts(plId,p.name,pts,desc,selType.cat);
+}
+
+async function awardCustom(){
+  const plId=document.getElementById('pts-pl').value;
+  const pts=parseInt(document.getElementById('c-pts').value)||0;
+  const rsn=document.getElementById('c-rsn').value.trim()||'Bonus';
+  if(!plId){showErr('Select a player!');return;}
+  if(!pts){showErr('Enter a point value.');return;}
+  const p=players.find(x=>x.id===plId);
+  await applyPts(plId,p.name,pts,rsn,'bonus');
+  document.getElementById('c-pts').value='';
+  document.getElementById('c-rsn').value='';
+}
+
+async function addPlayer(){
+  const name=document.getElementById('np-name').value.trim();
+  const alias=document.getElementById('np-alias').value.trim()||AP;
+  if(!name)return;
+  const AVC=['#ED2A91','#034BB7','#0A8A3F','#D58300','#EE2037','#6B6B6B','#C81E1E','#0061AF','#9E1414','#3A3A3C','#0A6F33'];
+  const color=AVC[players.length%AVC.length];
+  await sb.from('players').insert({name,alias,color,trivia:0,challenge:0,pred:0,total:0});
+  document.getElementById('np-name').value='';
+  document.getElementById('np-alias').value='';
+  await loadAll();
+}
+
+function toggleEdit(i){
+  if(openEdit===i){document.getElementById('peb-'+i).classList.remove('open');openEdit=null;}
+  else{
+    if(openEdit!==null)document.getElementById('peb-'+openEdit).classList.remove('open');
+    document.getElementById('peb-'+i).classList.add('open');
+    openEdit=i;
+  }
+}
+
+async function savePlayer(i){
+  const p=players[i];
+  const name=document.getElementById('en-'+i).value.trim();
+  const alias=document.getElementById('ea-'+i).value.trim()||AP;
+  if(!name)return;
+  await sb.from('players').update({name,alias}).eq('id',p.id);
+  const msg=document.getElementById('esaved-'+i);
+  if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2000);}
+  openEdit=i;
+  await loadAll();
+  openEdit=i;
+  setTimeout(()=>{
+    const el=document.getElementById('peb-'+i);
+    if(el)el.classList.add('open');
+  },100);
+}
+
+async function handlePhoto(i){
+  const file=document.getElementById('photo-file-'+i).files[0];
+  if(!file)return;
+  const p=players[i];
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    await sb.from('players').update({photo:e.target.result}).eq('id',p.id);
+    openEdit=i;
+    await loadAll();
+    openEdit=i;
+    setTimeout(()=>{
+      const el=document.getElementById('peb-'+i);
+      if(el)el.classList.add('open');
+    },100);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function removePhoto(i){
+  const p=players[i];
+  await sb.from('players').update({photo:null}).eq('id',p.id);
+  openEdit=i;
+  await loadAll();
+  openEdit=i;
+  setTimeout(()=>{
+    const el=document.getElementById('peb-'+i);
+    if(el)el.classList.add('open');
+  },100);
+}
+
+async function saveMsg(){
+  const m=document.getElementById('msg-in').value.trim();
+  if(!m)return;
+  await sb.from('settings').upsert({key:'message',value:m});
+  document.getElementById('hmsg').textContent=m;
+  document.getElementById('msg-in').value='';
+}
+
+async function saveLaunchDate(){
+  const d=document.getElementById('launch-date').value;
+  if(!d)return;
+  await sb.from('settings').upsert({key:'launch_date',value:d});
+  updateDayPill();
+  const msg=document.getElementById('date-saved');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2500);
+}
+
+function addCC(){
+  const name=document.getElementById('cc-name').value.trim();
+  const part=parseInt(document.getElementById('cc-part').value)||1;
+  const ru=parseInt(document.getElementById('cc-ru').value)||2;
+  const pts=parseInt(document.getElementById('cc-pts').value)||3;
+  if(!name)return;
+  TYPES.push({id:'cc_'+Date.now(),label:name,cat:'challenge',win:pts,ru,part,exact:false});
+  buildGrid();
+  document.getElementById('cc-name').value='';
+  document.getElementById('cc-part').value='';
+  document.getElementById('cc-ru').value='';
+  document.getElementById('cc-pts').value='';
+}
+
+function showResetConfirm(){document.getElementById('reset-confirm-box').style.display='block';}
+function hideResetConfirm(){document.getElementById('reset-confirm-box').style.display='none';}
+
+async function doReset(){
+  await sb.from('players').update({trivia:0,challenge:0,pred:0,total:0}).neq('id','00000000-0000-0000-0000-000000000000');
+  await sb.from('log').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  hideResetConfirm();
+  await loadAll();
+}
+
+function chkPin(){
+  if(document.getElementById('pin-in').value===PIN){
+    document.getElementById('lock-ui').classList.add('hidden');
+    document.getElementById('admin-ui').classList.remove('hidden');
+    document.getElementById('pin-err').style.display='none';
+    renderPlayerEditList();
+  } else {
+    document.getElementById('pin-err').style.display='block';
+    document.getElementById('pin-in').value='';
+  }
+}
+
+function sw(tab){
+  ['board','log','pts','admin'].forEach((t,i)=>{
+    document.getElementById('t-'+t).classList.toggle('hidden',t!==tab);
+    document.querySelectorAll('.tab')[i].classList.toggle('on',t===tab);
+  });
+  if(tab==='log'){logShown=5;renderLog();}
+}
+
+// INIT
+buildGrid();
+loadAll();
+</script>
+</body>
+</html>
