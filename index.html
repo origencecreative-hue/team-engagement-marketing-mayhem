@@ -281,8 +281,8 @@ body::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.45);point
 .mm-logo__scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.18) 2px,rgba(0,0,0,0.18) 4px);pointer-events:none;z-index:5;}
 .mm-logo__inner{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:2;}
 .mm-logo__eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;letter-spacing:0.36em;margin-bottom:2px;padding-left:0.36em;background:linear-gradient(90deg,#ED2A91,#EE2037);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.mm-logo__stack{position:relative;height:100px;width:100%;display:flex;justify-content:center;align-items:center;}
-.mm-logo__ghost-a,.mm-logo__ghost-b,.mm-logo__main{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:110px;letter-spacing:-0.02em;line-height:1;}
+.mm-logo__stack{position:relative;height:clamp(60px,20vw,100px);width:100%;display:flex;justify-content:center;align-items:center;}
+.mm-logo__ghost-a,.mm-logo__ghost-b,.mm-logo__main{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(52px,20vw,110px);letter-spacing:-0.02em;line-height:1;}
 .mm-logo__ghost-a{position:absolute;color:#ED2A91;animation:mm-glitch-a 5s infinite 0.2s;}
 .mm-logo__ghost-b{position:absolute;color:#EE2037;animation:mm-glitch-b 5s infinite 0.7s;}
 .mm-logo__main{position:relative;z-index:2;color:#fff;animation:mm-flicker 7s infinite;}
