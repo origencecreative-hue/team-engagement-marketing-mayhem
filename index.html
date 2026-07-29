@@ -290,6 +290,22 @@ body::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.45);point
 .mm-logo__ghost-b{position:absolute;color:#EE2037;animation:mm-glitch-b 5s infinite 0.7s;}
 .mm-logo__main{position:relative;z-index:2;color:#fff;animation:mm-flicker 7s infinite;}
 .mm-tagline{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-align:center;margin-top:2px;}
+/* Player spotlight modal */
+.pmodal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.74);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+.pmodal.open{display:flex;animation:pmfade .18s ease;}
+@keyframes pmfade{from{opacity:0}to{opacity:1}}
+.pmodal__card{position:relative;background:#141414;border:1px solid #262626;border-radius:20px;padding:40px 32px 30px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:pmpop .22s cubic-bezier(.2,.8,.3,1.15);}
+@keyframes pmpop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.pmodal__close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:#222;color:#C0C1C2;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;line-height:1;}
+.pmodal__close:hover{background:#2e2e2e;color:#fff;}
+.pm-av-ring{width:min(250px,62vw);height:min(250px,62vw);border-radius:50%;margin:0 auto 20px;padding:5px;background:linear-gradient(135deg,#ED2A91,#EE2037);display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(237,42,145,.35);}
+.pm-av{width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:min(92px,23vw);letter-spacing:2px;background:#141414;}
+.pm-av img{width:100%;height:100%;object-fit:cover;}
+.pm-street{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;letter-spacing:1px;background:linear-gradient(90deg,#ED2A91,#EE2037);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.pm-name{font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;color:#fff;}
+.pm-pts{margin-top:16px;padding-top:16px;border-top:1px solid #262626;font-family:'Poppins',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#9A9B9D;font-weight:500;}
+.pm-pts b{display:block;font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:40px;line-height:1;letter-spacing:1px;color:#fff;margin-bottom:2px;}
+.clk{cursor:pointer;}
 </style>
 </head>
 <body>
@@ -702,6 +718,26 @@ function top3AvHtml(p,cls){
   return`<div class="t3-av ${cls}" style="background:${p.color}22;color:${p.color};">${streetInits(p)}</div>`;
 }
 
+function showPlayer(id){
+  const p=players.find(x=>String(x.id)===String(id));
+  if(!p)return;
+  const inner=p.photo
+    ?`<img src="${p.photo}" alt="${p.name}"/>`
+    :`<div class="pm-av" style="background:${p.color}22;color:${p.color};">${streetInits(p)}</div>`;
+  const avatar=p.photo
+    ?`<div class="pm-av-ring"><div class="pm-av">${inner}</div></div>`
+    :`<div class="pm-av-ring">${inner}</div>`;
+  const street=isAP(p.alias)?'':p.alias;
+  document.getElementById('pmodal-body').innerHTML=`
+    ${avatar}
+    ${street?`<div class="pm-street">${street}</div><div class="pm-name">${p.name}</div>`
+            :`<div class="pm-street">${p.name}</div>`}
+    <div class="pm-pts"><b>${p.total}</b>points</div>`;
+  document.getElementById('pmodal').classList.add('open');
+}
+function hidePlayer(){document.getElementById('pmodal').classList.remove('open');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hidePlayer();});
+
 function renderPlayers(){
   const s=[...players].sort((a,b)=>b.total-a.total);
   const pc=document.getElementById('top3-container');
@@ -721,7 +757,7 @@ function renderPlayers(){
   ].filter(sl=>sl.p);
 
   pc.innerHTML=`<div class="top3">${top3.map(sl=>`
-    <div class="t3-slot ${sl.row}">
+    <div class="t3-slot ${sl.row} clk" onclick="showPlayer('${sl.p.id}')" title="View ${sl.p.name}">
       <div class="t3-rank ${sl.rk}">#${sl.rank}</div>
       ${top3AvHtml(sl.p,sl.av)}
       <div class="t3-street ${sl.st}">${isAP(sl.p.alias)?sl.p.name:sl.p.alias}</div>
@@ -735,7 +771,7 @@ function renderPlayers(){
   document.getElementById('plist').innerHTML=s.length?s.map((p,i)=>`
     <div class="pr ${i===0?'rank1':i===1?'rank2':i===2?'rank3':''}" style="animation-delay:${i*60}ms">
       <div style="text-align:center">${ri(i)}</div>
-      <div style="display:flex;align-items:center;gap:10px">
+      <div class="clk" style="display:flex;align-items:center;gap:10px" onclick="showPlayer('${p.id}')" title="View ${p.name}">
         ${avatarHtml(p,'36px')}
         <div>
           <div class="pn" style="${isAP(p.alias)?'color:#555;font-size:13px;':''}">${isAP(p.alias)?'Street name TBD':p.alias}</div>
@@ -1227,5 +1263,11 @@ function sw(tab){
 buildGrid();
 loadAll();
 </script>
+<div class="pmodal" id="pmodal" role="dialog" aria-modal="true" aria-label="Player spotlight" onclick="if(event.target===this)hidePlayer()">
+  <div class="pmodal__card">
+    <button class="pmodal__close" aria-label="Close" onclick="hidePlayer()">&times;</button>
+    <div id="pmodal-body"></div>
+  </div>
+</div>
 </body>
 </html>
